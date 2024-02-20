@@ -8,7 +8,7 @@ const onRegister = async (author, name, general, date) => {
             autor: author,
             nombreLibro: name,
             genero: general,
-            anioPublicacion: date,
+            fechaPublicacion: date,
         });
         console.log(response.data);
         
@@ -42,7 +42,7 @@ const onUpdate = async ( idL, author, name, general, date ) => {
             autor: author,
             nombreLibro: name,
             genero: general,
-            anioPublicacion: date,
+            fechaPublicacion: date,
         });
         console.log(response.data);
         
@@ -51,9 +51,47 @@ const onUpdate = async ( idL, author, name, general, date ) => {
     }
 }
 
+const getAllAutor = async ( autor ) => {
+    try {
+        const response = await axios.post(URL_API+"Autor", {
+            data: autor,
+        });
+        return response.data.data;
+    } catch (error) {
+        throw(error)
+    }
+}
+
+const getAllGenero = async ( genero ) => {
+    try {
+        const response = await axios.post(URL_API+"Genero", {
+            data: genero,
+        });
+        return response.data.data;
+    } catch (error) {
+        throw(error)
+    }
+}
+
+const getAllNombre = async ( nombre ) => {
+    try {
+        const response = await axios.post(URL_API+"Nombre", {
+            data: nombre,
+        });
+        return response.data.data;
+    } catch (error) {
+        throw(error)
+    }
+}
+
+
+
 export default {
     onRegister,
     onGetAll,
     onDeleteId,
     onUpdate,
+    getAllAutor,
+    getAllGenero,
+    getAllNombre
 }

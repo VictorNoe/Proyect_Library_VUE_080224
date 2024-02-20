@@ -1,10 +1,13 @@
 package mx.edu.utez.proyectoslibrosbackend.model.libros;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Date;
 
 @Entity
 @Table(name="libros")
@@ -25,7 +28,7 @@ public class Libros {
 
     @Column(nullable = false)
     private String genero;
-
+    @JsonFormat(pattern = "yyyy-mm-dd")
     @Column(nullable = false)
-    private int anioPublicacion;
+    private Date fechaPublicacion;
 }

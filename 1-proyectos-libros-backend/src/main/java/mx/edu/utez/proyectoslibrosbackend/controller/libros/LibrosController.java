@@ -8,14 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/libros")
@@ -32,6 +27,24 @@ public class LibrosController {
     @GetMapping("/{id}")
     public ResponseEntity<CustomResponse<Libros>> getById(@PathVariable("id") Long id) {
         return new ResponseEntity<>(this.services.getOne(id), HttpStatus.OK);
+    }
+
+    @PostMapping("/Autor")
+    public ResponseEntity<CustomResponse<?>> getAutor(@RequestBody Map<String, String> requets) {
+        String autor = requets.get("data");
+        return new ResponseEntity<>(this.services.getAllAutor(autor), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/Genero")
+    public ResponseEntity<CustomResponse<?>> getGenero(@RequestBody Map<String, String> requets) {
+        String genero = requets.get("data");
+        return new ResponseEntity<>(this.services.getAllGenero(genero), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/Nombre")
+    public ResponseEntity<CustomResponse<?>> getNombre(@RequestBody Map<String, String> requets) {
+        String nombre = requets.get("data");
+        return new ResponseEntity<>(this.services.getAllNombre(nombre), HttpStatus.CREATED);
     }
 
     @PostMapping("/")

@@ -1,6 +1,23 @@
 <template lang="">
   <b-container fluid>
       <b-row class="p-5 text-end">
+        <form @submit.prevent="getCategory">
+          <b-col>
+            <b-dropdown v-model="tipoBusqueda" text="Seleccionar tipo de búsqueda" variant="primary">
+              <b-dropdown-item @click="tipoBusqueda = 'autor'">Autor</b-dropdown-item>
+              <b-dropdown-item @click="tipoBusqueda = 'genero'">Género</b-dropdown-item>
+              <b-dropdown-item @click="tipoBusqueda = 'nombre'">Nombre</b-dropdown-item>
+            </b-dropdown>
+          </b-col>
+          <b-col>
+            <b-form-input v-model="consulta" placeholder="Ingrese su consulta..." class="mt-3"></b-form-input>
+          </b-col>
+          <b-col>
+            <b-button type="submit" variant="primary" class="mt-2">Buscar</b-button>
+          </b-col>
+        </form>
+      </b-row>
+      <b-row class="p-5 text-end">
         <b-col>
           <b-button variant="success" v-b-modal.modal-1>Agregar</b-button>
         </b-col>
@@ -27,7 +44,7 @@
                {{ libro.genero }}
             </b-card-text>
             <b-card-text>
-               {{ libro.anioPublicacion }}
+               {{ libro.fechaPublicacion }}
             </b-card-text>
             <div class="text-end">
               <b-button variant="danger" @click="eliminarLibro(libro.id)">Eliminar</b-button>
@@ -57,23 +74,24 @@
           </div>
           <div class="mb-3">
             <label for="anioPublicacion" class="form-label">Año de Publicación:</label>
-            <input type="number" id="anioPublicacion" v-model.number="anioPublicacion" class="form-control">
+            <input type="date" id="anioPublicacion" v-model="anioPublicacion" class="form-control">
           </div>
         </form>
       </b-modal>
   </b-container>
 </template>
 <script>
-import { Alert } from "bootstrap";
 import Libros from "./services/Libros";
 
 export default {
   data() {
     return {
+      tipoBusqueda: '',
+      consulta: '', 
       autor: '',
       nombreLibro: '',
       genero: '',
-      anioPublicacion: '',
+      anioPublicacion: "",
       libros: [],
       status: false,
       cargando: false,
@@ -90,11 +108,11 @@ export default {
     this.obtenerLibros();
   },
   methods: {
-    async insertarLibro(event) {
+    async insertarLibro() {
       const anioActual = new Date().getFullYear();
       try {
         if (this.anioPublicacion > anioActual) {
-            return alert("El año de edicion no es el correcto");
+          return alert("El año de edicion no es el correcto");
         }
         if (this.status) {
           await Libros.onUpdate(
@@ -107,7 +125,7 @@ export default {
         } else {
           if (this.anioPublicacion > anioActual) {
             return alert("El año de edicion no es el correcto");
-        }
+          }
           await Libros.onRegister(
             this.autor,
             this.nombreLibro,
@@ -117,7 +135,7 @@ export default {
         }
         this.obtenerLibros();
       } catch (error) {
-        throw(error)
+        throw (error)
       } finally {
         this.$bvModal.hide('modal-1');
         this.autor = '';
@@ -145,6 +163,30 @@ export default {
       this.obtenerLibros();
     },
 
+    async getCategory() {
+      console.log(this.consulta);
+      if (this.consulta.trim() === '') {
+        await this.obtenerLibros();
+        return;
+      }
+      switch (this.tipoBusqueda) {
+        case 'autor':
+          const autor = await Libros.getAllAutor(this.consulta)
+          this.libros = autor;
+          break;
+        case 'genero':
+          const genero = await Libros.getAllGenero(this.consulta)
+          this.libros = genero;
+          break;
+        case 'nombre':
+          const name = await Libros.getAllNombre(this.consulta)
+          this.libros = name;
+          break;
+        default:
+          console.error('Tipo de búsqueda no válido');
+          return;
+      }
+    },
 
     editarLibro(libro) {
       this.libroEditado = { ...libro };

@@ -25,6 +25,33 @@ public class LibrosServices {
     }
 
     @Transactional(readOnly = true)
+    public CustomResponse<List<Libros>> getAllAutor(String autor) {
+        try {
+            return new CustomResponse<>(this.repository.findAutor(autor), false, 200, "OK");
+        } catch (Exception e) {
+            return new CustomResponse<>(null,true, 500, "Error de libros");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public CustomResponse<List<Libros>> getAllGenero(String genero) {
+        try {
+            return new CustomResponse<>(this.repository.findGemero(genero), false, 200, "OK");
+        } catch (Exception e) {
+            return new CustomResponse<>(null,true, 500, "Error de libros");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public CustomResponse<List<Libros>> getAllNombre(String nombre) {
+        try {
+            return new CustomResponse<>(this.repository.findNombre(nombre), false, 200, "OK");
+        } catch (Exception e) {
+            return new CustomResponse<>(null,true, 500, "Error de libros");
+        }
+    }
+
+    @Transactional(readOnly = true)
     public CustomResponse<Libros> getOne(Long id) {
         try {
             return new CustomResponse<>(this.repository.findById(id).get(), false, 200,"OK");
