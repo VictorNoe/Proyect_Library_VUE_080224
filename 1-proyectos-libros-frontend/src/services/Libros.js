@@ -53,7 +53,7 @@ const onUpdate = async ( idL, author, name, general, date ) => {
 
 const getAllAutor = async ( autor ) => {
     try {
-        const response = await axios.post(URL_API+"Autor", {
+        const response = await axios.post(URL_API+"autor", {
             data: autor,
         });
         return response.data.data;
@@ -64,7 +64,7 @@ const getAllAutor = async ( autor ) => {
 
 const getAllGenero = async ( genero ) => {
     try {
-        const response = await axios.post(URL_API+"Genero", {
+        const response = await axios.post(URL_API+"genero", {
             data: genero,
         });
         return response.data.data;
@@ -75,8 +75,20 @@ const getAllGenero = async ( genero ) => {
 
 const getAllNombre = async ( nombre ) => {
     try {
-        const response = await axios.post(URL_API+"Nombre", {
+        const response = await axios.post(URL_API+"nombre", {
             data: nombre,
+        });
+        return response.data.data;
+    } catch (error) {
+        throw(error)
+    }
+}
+
+const getAllFechas = async ( fechaIni, fechaFinal ) => {
+    try {
+        const response = await axios.post(URL_API+"fechas", {
+            fechaInicio: fechaIni,
+            fechaFin: fechaFinal
         });
         return response.data.data;
     } catch (error) {
@@ -93,5 +105,6 @@ export default {
     onUpdate,
     getAllAutor,
     getAllGenero,
-    getAllNombre
+    getAllNombre,
+    getAllFechas,
 }

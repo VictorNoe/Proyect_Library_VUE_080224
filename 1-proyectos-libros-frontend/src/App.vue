@@ -1,41 +1,77 @@
 <template lang="">
-  <b-container fluid>
-      <b-row class="p-5 text-end">
-        <form @submit.prevent="getCategory">
-          <b-col>
-            <b-dropdown v-model="tipoBusqueda" text="Seleccionar tipo de búsqueda" variant="primary">
+  <b-container style="height: 2000px" class="p-5" fluid>
+    <b-row class="p-3">
+      <b-col cols="5">
+          <b-group label="Fecha de inicio">
+            <b-datepicker v-model="fechaInicio"></b-datepicker>
+          </b-group>
+      </b-col>
+      <b-col cols="5">
+        <b-group label="Fecha de fin">
+            <b-datepicker v-model="fechaFin"></b-datepicker>
+          </b-group>
+      </b-col>
+      <b-col cols="2">
+        <b-button variant="primary" @click="getDate">Buscar libros</b-button>
+      </b-col>
+    </b-row>
+    <b-row class="p-3" align-v="end">
+      <b-col cols="12">
+        <b-input-group label="Fecha de inicio">
+          <template>
+            <b-dropdown v-model="tipoBusqueda" text="categorys" variant="primary">
               <b-dropdown-item @click="tipoBusqueda = 'autor'">Autor</b-dropdown-item>
               <b-dropdown-item @click="tipoBusqueda = 'genero'">Género</b-dropdown-item>
               <b-dropdown-item @click="tipoBusqueda = 'nombre'">Nombre</b-dropdown-item>
             </b-dropdown>
-          </b-col>
-          <b-col>
-            <b-form-input v-model="consulta" placeholder="Ingrese su consulta..." class="mt-3"></b-form-input>
-          </b-col>
-          <b-col>
-            <b-button type="submit" variant="primary" class="mt-2">Buscar</b-button>
-          </b-col>
-        </form>
-      </b-row>
-      <b-row class="p-5 text-end">
-        <b-col>
-          <b-button variant="success" v-b-modal.modal-1>Agregar</b-button>
+          </template>
+          <b-form-input v-model="consulta" placeholder="Ingrese su consulta..."/>
+          <b-input-group-append>
+            <b-button variant="primary" @click="getCategory">Buscar</b-button>
+          </b-input-group-append>
+        </b-input-group>
+      </b-col>
+      <b-col>
+      </b-col>
+    </b-row>
+      <b-row>
+        <b-col @dragstart="handleDragStart('add')" cols="6" class="p-2" v-show="showElement">
+          <b-card class="p-3">
+            <b-row class="mb-3">
+              <b-col cols="6">
+                <label for="autor" class="form-label">Autor:</label>
+                <input type="text" id="autor" v-model="autor" class="form-control">
+              </b-col>
+              <b-col cols="6">
+                <label for="nombreLibro" class="form-label">Nombre del Libro:</label>
+                <input type="text" id="nombreLibro" v-model="nombreLibro" class="form-control">
+              </b-col>
+            </b-row>
+            <b-row class="mb-3">
+              <b-col cols="6">
+                <label for="genero" class="form-label">Género:</label>
+                <input type="text" id="genero" v-model="genero" class="form-control">
+              </b-col>
+              <b-col cols="6">
+                <label for="anioPublicacion" class="form-label">Año de Publicación:</label>
+                <input type="date" id="anioPublicacion" v-model="anioPublicacion" class="form-control">
+              </b-col>      
+            </b-row>
+          </b-card>
         </b-col>
       </b-row>
-      <b-row>
+      <b-row @dragover.prevent @drop="handleDrop" class="border border-1 p-3">
         <b-col v-if="cargando" class="d-flex justify-content-center mb-3">
           <b-spinner style="width: 3rem; height: 3rem;"></b-spinner>
         </b-col>
-        <b-col cols="3" v-else v-for="libro in libros" :key="libro.id">
+        <b-col cols="3" v-for="(libro, index) in libros" :key="libros.id" class="animate__animated animate__fadeIn">
           <b-card
-          :title=libro.autor
-          img-src=""
-          img-alt="Image"
-          img-top
-          tag="article"
-          style="max-width: 20rem;"
-          class="mb-2"
-          @click="editarLibro(libro)"
+            :title=libro.autor
+            tag="article"
+            style="max-width: 20rem;"
+            class="mb-2"
+            draggable="true"
+            @dragstart="handleDragStart(index)"
           >
             <b-card-text>
                {{ libro.nombreLibro }}
@@ -46,7 +82,8 @@
             <b-card-text>
                {{ libro.fechaPublicacion }}
             </b-card-text>
-            <div class="text-end">
+            <div class="text-end" z-index:1>
+              <b-button variant="primary" @click="editarLibro(libro)">Actualizar</b-button>
               <b-button variant="danger" @click="eliminarLibro(libro.id)">Eliminar</b-button>
             </div>
           </b-card>
@@ -86,8 +123,12 @@ import Libros from "./services/Libros";
 export default {
   data() {
     return {
+      showElement: true,
+      lastScrollPosition: 0,
+      fechaInicio: null,
+      fechaFin: null,
       tipoBusqueda: '',
-      consulta: '', 
+      consulta: '',
       autor: '',
       nombreLibro: '',
       genero: '',
@@ -106,8 +147,23 @@ export default {
   },
   mounted() {
     this.obtenerLibros();
+    window.addEventListener("scroll", this.onScroll);
   },
+  beforeDestroy() {
+    window.removeEventListener("scroll", this.onScroll);
+  },
+
   methods: {
+    onScroll() {
+      const currentScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+        console.log(currentScrollPosition);
+      if (Math.abs(currentScrollPosition - this.lastScrollPosition) < 60) {
+        return;
+      }
+      this.showElement = currentScrollPosition < this.lastScrollPosition; 
+      this.lastScrollPosition = currentScrollPosition;
+    },
+
     async insertarLibro() {
       const anioActual = new Date().getFullYear();
       try {
@@ -123,6 +179,9 @@ export default {
             this.anioPublicacion,
           );
         } else {
+          if (!this.autor,!this.nombreLibro,!this.genero,!this.anioPublicacion){
+            return alert("Llena todos los campos");
+          }
           if (this.anioPublicacion > anioActual) {
             return alert("El año de edicion no es el correcto");
           }
@@ -183,9 +242,32 @@ export default {
           this.libros = name;
           break;
         default:
-          console.error('Tipo de búsqueda no válido');
+          alert('Tipo de búsqueda no válido');
           return;
       }
+    },
+
+    async getDate() {
+      if (!this.fechaInicio || !this.fechaFin) {
+        alert("Ingrese las dos fechas por favor")
+        return;
+      }
+
+      const fechaInicioFormateada = this.formatDate(this.fechaInicio);
+      const fechaFinFormateada = this.formatDate(this.fechaFin);
+      const result = await Libros.getAllFechas(fechaInicioFormateada, fechaFinFormateada);
+      this.libros = result;
+    },
+
+    formatDate(date) {
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      const seconds = date.getSeconds().toString().padStart(2, '0');
+      const milliseconds = date.getMilliseconds().toString().padStart(3, '0');
+      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`;
     },
 
     editarLibro(libro) {
@@ -197,6 +279,24 @@ export default {
       this.$bvModal.show('modal-1');
       this.status = true
     },
+
+    handleDragStart(index) {
+      console.log(index);
+      event.dataTransfer.setData("text/plain", index);
+    },
+
+    handleDrop(event) {
+      event.preventDefault();
+      const index = event.dataTransfer.getData("text/plain");
+      if(index === "add"){
+        return this.insertarLibro();
+      }
+      const itemText = this.libros[index];
+      const dropIndex = this.libros.indexOf(event.target.innerText);
+      this.libros.splice(index, 1);
+      this.libros.splice(dropIndex, 0, itemText);
+    },
+    
   },
 }
 </script>
