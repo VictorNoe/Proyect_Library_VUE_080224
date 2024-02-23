@@ -2,14 +2,10 @@
   <b-container style="height: 2000px" class="p-5" fluid>
     <b-row class="p-3">
       <b-col cols="5">
-          <b-group label="Fecha de inicio">
-            <b-datepicker v-model="fechaInicio"></b-datepicker>
-          </b-group>
+        <b-datepicker v-model="fechaInicio"></b-datepicker>
       </b-col>
       <b-col cols="5">
-        <b-group label="Fecha de fin">
-            <b-datepicker v-model="fechaFin"></b-datepicker>
-          </b-group>
+        <b-datepicker v-model="fechaFin"></b-datepicker>
       </b-col>
       <b-col cols="2">
         <b-button variant="primary" @click="getDate">Buscar libros</b-button>
@@ -156,7 +152,6 @@ export default {
   methods: {
     onScroll() {
       const currentScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
-        console.log(currentScrollPosition);
       if (Math.abs(currentScrollPosition - this.lastScrollPosition) < 60) {
         return;
       }
@@ -167,6 +162,7 @@ export default {
     async insertarLibro() {
       const anioActual = new Date().getFullYear();
       try {
+        console.log(this.anioPublicacion);
         if (this.anioPublicacion > anioActual) {
           return alert("El año de edicion no es el correcto");
         }
@@ -252,10 +248,7 @@ export default {
         alert("Ingrese las dos fechas por favor")
         return;
       }
-
-      const fechaInicioFormateada = this.formatDate(this.fechaInicio);
-      const fechaFinFormateada = this.formatDate(this.fechaFin);
-      const result = await Libros.getAllFechas(fechaInicioFormateada, fechaFinFormateada);
+      const result = await Libros.getAllFechas(this.fechaInicio,this.fechaFin);
       this.libros = result;
     },
 
@@ -281,7 +274,6 @@ export default {
     },
 
     handleDragStart(index) {
-      console.log(index);
       event.dataTransfer.setData("text/plain", index);
     },
 

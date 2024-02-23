@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -29,22 +31,30 @@ public class LibrosController {
         return new ResponseEntity<>(this.services.getOne(id), HttpStatus.OK);
     }
 
-    @PostMapping("/Autor")
+    @PostMapping("/autor")
     public ResponseEntity<CustomResponse<?>> getAutor(@RequestBody Map<String, String> requets) {
         String autor = requets.get("data");
         return new ResponseEntity<>(this.services.getAllAutor(autor), HttpStatus.CREATED);
     }
 
-    @PostMapping("/Genero")
+    @PostMapping("/genero")
     public ResponseEntity<CustomResponse<?>> getGenero(@RequestBody Map<String, String> requets) {
         String genero = requets.get("data");
         return new ResponseEntity<>(this.services.getAllGenero(genero), HttpStatus.CREATED);
     }
 
-    @PostMapping("/Nombre")
+    @PostMapping("/nombre")
     public ResponseEntity<CustomResponse<?>> getNombre(@RequestBody Map<String, String> requets) {
         String nombre = requets.get("data");
         return new ResponseEntity<>(this.services.getAllNombre(nombre), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/fechas")
+    public ResponseEntity<CustomResponse<?>> buscarPorRangoDeFechas(@RequestBody Map<String, LocalDate> request) {
+        LocalDate fechaInicio = request.get("fechaInicio");
+        LocalDate fechaFin = request.get("fechaFin");
+        System.out.println("==================>"+fechaFin);
+        return new ResponseEntity<>(this.services.buscarPorRangoDeFechas(fechaInicio, fechaFin), HttpStatus.CREATED);
     }
 
     @PostMapping("/")

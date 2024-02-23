@@ -10,7 +10,6 @@ const onRegister = async (author, name, general, date) => {
             genero: general,
             fechaPublicacion: date,
         });
-        console.log(response.data);
         
     } catch (error) {
         throw(error)
@@ -44,8 +43,6 @@ const onUpdate = async ( idL, author, name, general, date ) => {
             genero: general,
             fechaPublicacion: date,
         });
-        console.log(response.data);
-        
     } catch (error) {
         throw(error)
     }

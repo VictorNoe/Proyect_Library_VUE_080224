@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -28,7 +29,7 @@ public class Libros {
 
     @Column(nullable = false)
     private String genero;
-    @JsonFormat(pattern = "yyyy-mm-dd")
+
     @Column(nullable = false)
-    private Date fechaPublicacion;
+    private LocalDate fechaPublicacion;
 }

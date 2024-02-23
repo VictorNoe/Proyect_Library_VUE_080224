@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -39,6 +41,14 @@ public class LibrosServices {
             return new CustomResponse<>(this.repository.findGemero(genero), false, 200, "OK");
         } catch (Exception e) {
             return new CustomResponse<>(null,true, 500, "Error de libros");
+        }
+    }
+
+    public CustomResponse<List<Libros>> buscarPorRangoDeFechas(LocalDate fechaInicio, LocalDate fechaFin) {
+        try {
+            return new CustomResponse<>(repository.buscarPorRangoDeFechas(fechaInicio, fechaFin), false, 200, "OK");
+        } catch (Exception e) {
+            return new CustomResponse<>(null, true, 500, "Error al buscar libros por rango de fechas");
         }
     }
 
